@@ -5,16 +5,19 @@ arch=$(uname -a)
 phyproc=$(grep "physical id" /proc/cpuinfo | sort -u | wc -l)
 
 #! The number of total cores among the physical CPU's
-virtproc="$(grep -c processor /proc/cpuinfo)"
+virtproc=$(grep -c processor /proc/cpuinfo)
 
 #! Used RAM (in MB)
 ramusage=$(free -m | grep Mem | awk '{printf("%d/%d MB (%.2f%%)", $3, $2, $3/$2 * 100)}')
 
-#!
+#! Used Disk space (in MB/GB)
+diskusage=$(df -Bm | grep "LVM" | awk '{used += $3} {total += $2} END {printf("%dMB/%dGB (%.2f%%)", used, total/1024, used/total * 100)}')
+
 
 echo "
 	#Architecture: $arch
 	#Physical CPUs: $phyproc
 	#Virtual CPUs: $virtproc
 	#RAM usage: $ramusage
+	#Disk Usage: $diskusage
 "
