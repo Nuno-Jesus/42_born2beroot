@@ -23,23 +23,28 @@ lastboot=$(who | awk '{print $3, $4}')
 lvm=$(lsblk | grep -c 'lvm' | awk '{if ($1 > 0) {print "Yes"} else {print "No"}}')
 
 #! Number of TCP connections
+tcp=$(ss -t | grep -c ESTAB | awk '{print $1 ESTABLISHED}')
 
 #! User log
+log=$(who | awk '{print $1}' | sort -u | wc -l)
 
 #! Newtork
+ip=$(hostname -I)
+mac=$(ip link | grep ether | awk '{printf("(%s)", $2)}')
 
 #! Sudo 
-echo "
+sudo=$(cat /var/log/sudo/sudo.log | grep -c COMMAND)
+wall "
 	#Architecture: $arch
 	#Physical CPUs: $phyproc
 	#Virtual CPUs: $virtproc
 	#RAM usage: $ramusage
 	#Disk Usage: $diskusage
 	#CPU load: $cpuload
-	#Last boot:
-	#LVM use: 
-	#TCP connections:
-	#User log:
-	#Network:
-	#Sudo:
+	#Last boot: $lastboot
+	#LVM use: $lvm
+	#TCP connections: $tcp
+	#User log: $log
+	#Network: $ip $mac
+	#Sudo: $sudo
 "
